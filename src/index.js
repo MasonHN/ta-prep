@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
-import { isNull } from "util";
 
 class App extends React.Component {
   constructor(props) {
@@ -9,7 +8,8 @@ class App extends React.Component {
     this.state = {
       todos: [],
       newTodo: '',
-      updateField: []
+      updateField: [],
+      count: 0
     }
     // this.addTodos.bind(this);
     // this.todoTextChange.bind(this);
@@ -39,10 +39,8 @@ class App extends React.Component {
       todo: text
     })
     .then((result) => {
-      console.log(result.data);
       let newTodoList = this.state.todos;
       newTodoList.push(result.data);
-      console.log(newTodoList)
       this.setState({
         todos: newTodoList
       })
@@ -58,10 +56,12 @@ class App extends React.Component {
     })
     if (!updatedTodos[i]) {
       axios.post('/updateTodo', {
-        todo: this.state.todos[i],
-        id : i
+        todo: this.state.todos[i].title,
+        id : this.state.todos[i].id
       })
-      this.componentDidMount()
+      .then(() => {
+        this.componentDidMount()
+      })
     }
   }
 
@@ -69,7 +69,7 @@ class App extends React.Component {
     console.log(i)
     console.log(updateText)
     let updatedTodos = this.state.todos
-    updatedTodos.splice(i, 1, updateText)
+    updatedTodos[i].title = updateText
     this.setState({
       todos: updatedTodos,
     })
@@ -124,10 +124,9 @@ const TodoList = (props) => {
       <div>
         <div>
           {props.todo.title}
+          <button onClick={() => {props.delete(props.index)}}>X</button>
           <button onClick={() => {props.updateButton(props.index)}} >Update</button>
-          <input type='hidden'></input>
         </div>
-        <button onClick={() => {props.delete(props.index)}}>X</button>
         <br/>
       </div>
     )

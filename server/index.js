@@ -59,12 +59,13 @@ app.post("/todos", (req, res) => {
 });
 
 app.post("/updateTodo", (req, res) => {
-  db.con.query(`UPDATE todos SET title = '${req.body.todo}' WHERE todo_id = '${req.body.id + 1}';`, (err, result) => {
+  db.con.query(`UPDATE todos SET title = '${req.body.todo}' WHERE id = '${req.body.id}';`, (err, result) => {
     if (err) {
       console.log('error', err)
       res.send();
     } else {
       console.log('success db update')
+      console.log(req.body);
       res.send(req.body.todo)
     }
   })
