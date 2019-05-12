@@ -11,8 +11,10 @@ class App extends React.Component {
       updateField: [],
       count: 0
     }
-    // this.addTodos.bind(this);
-    // this.todoTextChange.bind(this);
+    this.updateButtonHandler = this.updateButtonHandler.bind(this);
+    this.todoTextChange = this.todoTextChange.bind(this);
+    this.updateTodo = this.updateTodo.bind(this);
+    this.deleteTodo = this.deleteTodo.bind(this);
   }
 
   componentDidMount() {
@@ -93,12 +95,12 @@ class App extends React.Component {
     return (
       <div>
         <div>I'm so lonely without anything to complete</div>
-        <input type='text' onChange={this.todoTextChange.bind(this)}/>
+        <input type='text' onChange={this.todoTextChange}/>
         <button onClick={(e) => {e.preventDefault(); this.addTodos(this.state.newTodo)}}>Click Me To Do Things!</button>
         <br/>
         <div>
           {this.state.todos.map((todo, index) => (
-            < TodoList update = {this.updateTodo.bind(this)} updateField = {this.state.updateField} updateButton = {this.updateButtonHandler.bind(this)} delete = {this.deleteTodo.bind(this)} index={index} todo={todo} />
+            < TodoList update = {this.updateTodo} updateField = {this.state.updateField} updateButton = {this.updateButtonHandler} delete = {this.deleteTodo} index={index} todo={todo} />
           ))}
         </div>
       </div>
