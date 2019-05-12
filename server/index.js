@@ -12,29 +12,36 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/", express.static("dist"));
 
 app.get("/todos", (req, res) => {
-  request.get('https://jsonplaceholder.typicode.com/todos', (err, response, body) => {
+  // request.get('https://jsonplaceholder.typicode.com/todos', (err, response, body) => {
+  //   if (err) {
+  //     console.log('error', err)
+  //     res.send();
+  //   } else {
+  //     console.log('body', typeof(body));
+  //     let data = JSON.parse(body);
+  //     for (let i = 0; i < data.length; i++) {
+  //       db.con.query(`INSERT INTO todos(title) values ('${data[i].title}');`, (err, result) => {
+  //         if (err) {
+  //           console.log('error', err)
+  //         } else {
+  //         }
+  //       })
+  //     }
+  //     db.con.query(`SELECT * from todos;`, (err, results) => {
+  //       if (err) {
+  //         console.log('error', err)
+  //       } else {
+  //         res.send(results);
+  //       }
+  //     })
+  //   }
+  // })
+  db.con.query(`SELECT * from todos;`, (err, results) => {
     if (err) {
       console.log('error', err)
       res.send();
     } else {
-      console.log('body', typeof(body));
-      let data = JSON.parse(body);
-      for (let i = 0; i < data.length; i++) {
-        db.con.query(`INSERT INTO todos(title) values ('${data[i].title}');`, (err, result) => {
-          if (err) {
-            console.log('error', err)
-          } else {
-          }
-        })
-      }
-      db.con.query(`SELECT * from todos;`, (err, results) => {
-        if (err) {
-          console.log('error', err)
-        } else {
-          res.send(results);
-        }
-      })
-      //res.send(JSON.parse(body));
+      res.send(results);
     }
   })
 });
@@ -46,6 +53,18 @@ app.post("/todos", (req, res) => {
       res.send();
     } else {
       console.log('success db insert')
+      res.send(req.body.todo)
+    }
+  })
+});
+
+app.post("/updateTodo", (req, res) => {
+  db.con.query(`UPDATE todos SET title = '${req.body.todo}' WHERE todo_id = '${req.body.id + 1}';`, (err, result) => {
+    if (err) {
+      console.log('error', err)
+      res.send();
+    } else {
+      console.log('success db update')
       res.send(req.body.todo)
     }
   })

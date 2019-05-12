@@ -8,20 +8,22 @@ class App extends React.Component {
     super(props)
     this.state = {
       todos: [],
-      newTodo: ''
+      newTodo: '',
+      updateField: []
     }
     // this.addTodos.bind(this);
     // this.todoTextChange.bind(this);
   }
 
   componentDidMount() {
-    
     axios.get('/todos')
     .then((results) => {
+      console.log(results.data);
       this.setState({
-        todos: results.data
+        todos: results.data,
+        updateField: Array(results.data.length).fill(null)
       })
-      console.log(results)
+      console.log(this.state)
     })
   }
 
@@ -38,35 +40,52 @@ class App extends React.Component {
     })
     .then((result) => {
       console.log(result.data);
+      let newTodoList = this.state.todos;
+      newTodoList.push(result.data);
+      console.log(newTodoList)
       this.setState({
-        todos: this.state.todos.concat([result.data])
+        todos: newTodoList
       })
+      this.componentDidMount()
     })
   }
 
-  updateTodo(i) {
-    console.log(i)
-    let updatedTodos = this.state.todos
-    let todoToUpdate = this.state.todos[i]
-    updatedTodos.splice(i, 1, todoToUpdate)
-    axios.post('/updateTodo', {
-      todo: todoToUpdate
-    })
+  updateButtonHandler(i) {
+    let updatedTodos = this.state.updateField;
+    updatedTodos[i] = !updatedTodos[i]
     this.setState({
-      todos: updatedTodos
+      updateField : updatedTodos
+    })
+    if (!updatedTodos[i]) {
+      axios.post('/updateTodo', {
+        todo: this.state.todos[i],
+        id : i
+      })
+      this.componentDidMount()
+    }
+  }
+
+  updateTodo(updateText, i) {
+    console.log(i)
+    console.log(updateText)
+    let updatedTodos = this.state.todos
+    updatedTodos.splice(i, 1, updateText)
+    this.setState({
+      todos: updatedTodos,
     })
   }
 
   deleteTodo(i) {
     console.log(i)
     let updatedTodos = this.state.todos
-    updatedTodos.splice(i, 1)
     let todoToDelete = this.state.todos[i]
+    updatedTodos.splice(i, 1)
     axios.post('/todosDelete', {
-      todo: todoToDelete.title
+      todo: todoToDelete.title,
     })
     this.setState({
-      todos : updatedTodos
+      todos : updatedTodos,
+      updateField: Array(updatedTodos.length).fill(null)
     })
   }
 
@@ -79,7 +98,7 @@ class App extends React.Component {
         <br/>
         <div>
           {this.state.todos.map((todo, index) => (
-            < TodoList delete = {this.deleteTodo.bind(this)} index={index} todo={todo} />
+            < TodoList update = {this.updateTodo.bind(this)} updateField = {this.state.updateField} updateButton = {this.updateButtonHandler.bind(this)} delete = {this.deleteTodo.bind(this)} index={index} todo={todo} />
           ))}
         </div>
       </div>
@@ -89,18 +108,30 @@ class App extends React.Component {
 
 
 const TodoList = (props) => {
-  return (
-    <div>
-
+  if(props.updateField[props.index]) {
+    return (
       <div>
-        {props.todo.title}
-        <button>Update</button>
-        <input type='hidden'></input>
-      </div>
+        <div>
+          {props.todo.title}
+          <button onClick= {() => {props.updateButton(props.index)}} >Update</button>
+          <input onChange={(e) => {e.preventDefault(); props.update(e.target.value, props.index)}} type='text' name='update'></input>
+        </div>
+        <br/>
+      </div>      
+    )
+  } else {
+    return (
+      <div>
+        <div>
+          {props.todo.title}
+          <button onClick={() => {props.updateButton(props.index)}} >Update</button>
+          <input type='hidden'></input>
+        </div>
         <button onClick={() => {props.delete(props.index)}}>X</button>
-      <br/>
-    </div>
-  )
+        <br/>
+      </div>
+    )
+}
 }
 
 
