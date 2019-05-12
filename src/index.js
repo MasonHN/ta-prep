@@ -44,6 +44,19 @@ class App extends React.Component {
     })
   }
 
+  updateTodo(i) {
+    console.log(i)
+    let updatedTodos = this.state.todos
+    let todoToUpdate = this.state.todos[i]
+    updatedTodos.splice(i, 1, todoToUpdate)
+    axios.post('/updateTodo', {
+      todo: todoToUpdate
+    })
+    this.setState({
+      todos: updatedTodos
+    })
+  }
+
   deleteTodo(i) {
     console.log(i)
     let updatedTodos = this.state.todos
@@ -79,9 +92,12 @@ const TodoList = (props) => {
   return (
     <div>
 
-      <div onClick={() => {props.delete(props.index)}}>
+      <div>
         {props.todo.title}
+        <button>Update</button>
+        <input type='hidden'></input>
       </div>
+        <button onClick={() => {props.delete(props.index)}}>X</button>
       <br/>
     </div>
   )
